@@ -171,10 +171,21 @@ def NaiveBayes(s1, s2, s3, s4, s5):
 
 
 @app.post('/predict/decision')
-def predict_decision(s1: str, s2: str, s3: str, s4: str, s5: str):
+async def predict_decision(body: dict):
+    s1 = body.get('s1')
+    s2 = body.get('s2')
+    s3 = body.get('s3')
+    s4 = body.get('s4')
+    s5 = body.get('s5')
+    
+    if None in (s1, s2, s3, s4, s5):
+        raise HTTPException(status_code=400, detail="Missing required fields")
     result = DecisionTree(s1, s2, s3, s4, s5)
+
+    # Check the result and handle errors
     if result == -1:
         raise HTTPException(status_code=404, detail="Disease not found")
+
     return {'result': result}
 
 
@@ -193,6 +204,6 @@ def predict_random(s1: str, s2: str, s3: str, s4: str, s5: str):
         raise HTTPException(status_code=404, detail="Disease not found")
     return {'result': result}
 
-if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+# if __name__ == '__main__':
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8080)
